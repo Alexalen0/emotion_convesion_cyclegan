@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Audio Details | My Fullstack App{% endblock %}
+
+{% block content %}
+<div class="card mx-auto mt-5" style="max-width: 600px;">
+  <h2 class="mb-4">Audio Conversion Details</h2>
+  <p><strong>Uploaded by:</strong> {{ audio_file.user.email }}</p>
+  <p><strong>Original Emotion:</strong> {{ audio_file.original_emotion|default:"Unknown" }}</p>
+  <p><strong>Target Emotion:</strong> {{ audio_file.get_target_emotion_display }}</p>
+  <p><strong>Uploaded:</strong> {{ audio_file.created_at|date:"M d, Y H:i" }}</p>
+  <p><strong>Status:</strong> 
+    {% if audio_file.is_processed %}
+      <span class="text-success">Processed</span>
+    {% else %}
+      <span class="text-warning">Processing...</span>
+    {% endif %}
+  </p>
+  
+  {% if audio_file.confidence_scores %}
+  <div class="my-3">
+    <strong>Emotion Confidence Scores:</strong>
+    <ul>
+      {% for emotion, score in audio_file.confidence_scores.items %}
+      <li>{{ emotion }}: {{ score|floatformat:2 }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  
+  <div class="d-flex gap-2 mt-3">
+    {% if audio_file.is_processed and audio_file.converted_file %}
+    <a href="{% url 'download_audio' audio_file.id %}" class="btn btn-outline-primary">Download Converted Audio</a>
+    {% endif %}
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

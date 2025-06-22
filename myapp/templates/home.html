@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card mx-auto mt-5" style="max-width: 600px;">
+  <h1 class="mb-4">Welcome to the AI Emotion Converter</h1>
+  {% if user.is_authenticated %}
+  <p>
+    Hello, <strong>{{ user.email }}</strong>! You are logged in and ready to
+    convert audio emotions.
+  </p>
+  <a href="{% url 'dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
+  {% else %}
+  <p>
+    Transform the emotional tone of your audio files using cutting-edge AI
+    technology!
+  </p>
+  <h3>Features:</h3>
+  <ul class="mb-4">
+    <li>Upload audio files (WAV, MP3, M4A)</li>
+    <li>AI-powered emotion detection</li>
+    <li>Convert between 6 different emotions</li>
+    <li>Download processed audio files</li>
+    <li>Secure Firebase authentication</li>
+  </ul>
+  <div class="d-flex gap-2">
+    <a href="{% url 'signup' %}" class="btn btn-primary">Sign Up</a>
+    <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+  </div>
+  {% endif %}
+</div>
+<div class="card mt-4 mx-auto" style="max-width: 700px;">
+  <h3>How It Works</h3>
+  <div class="row g-3 mt-2">
+    <div class="col-12 col-md-3">
+      <h5>Upload</h5>
+      <p>Upload your audio file in WAV, MP3, or M4A format</p>
+    </div>
+    <div class="col-12 col-md-3">
+      <h5>Analyze</h5>
+      <p>AI detects the current emotion in your audio</p>
+    </div>
+    <div class="col-12 col-md-3">
+      <h5>Convert</h5>
+      <p>Transform to your desired emotional tone</p>
+    </div>
+    <div class="col-12 col-md-3">
+      <h5>Download</h5>
+      <p>Get your emotionally transformed audio file</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

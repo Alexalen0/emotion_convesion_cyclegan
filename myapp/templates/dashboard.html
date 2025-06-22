@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | My Fullstack App{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <h2 class="mb-2">Emotion Converter Dashboard</h2>
+    <p>Welcome, <strong>{{ user.email }}</strong>! Convert your audio files to different emotions using AI.</p>
+</div>
+
+<!-- Upload Form -->
+<div class="card mb-4">
+    <h3 class="mb-3">Upload Audio for Emotion Conversion</h3>
+    <form method="post" action="{% url 'upload_audio' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Select Audio File:</label>
+            <input type="file" name="audio_file" accept=".wav,.mp3,.m4a" class="form-control" required />
+            <small class="text-muted">Supported formats: WAV, MP3, M4A</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Target Emotion:</label>
+            <select name="target_emotion" class="form-select" required>
+                <option value="">Select emotion...</option>
+                {% for code, name in emotion_choices %}
+                {% if code == 'SAD' %}
+                <option value="{{ code }}">{{ name }}</option>
+                {% else %}
+                <option value="{{ code }}" disabled>{{ name }} (coming soon)</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Convert Emotion</button>
+    </form>
+    <div class="mt-2 text-muted" style="font-size:0.98em;">
+      Only <strong>Sad</strong> conversion is available right now. More emotions coming soon!
+    </div>
+</div>
+
+<!-- User's Audio Files -->
+<div class="card mb-4">
+    <h3 class="mb-3">Your Audio Conversions</h3>
+    {% if user_files %}
+        {% for audio in user_files %}
+        <div class="audio-list-item mb-3 p-3 bg-light">
+            <div>
+                <strong>{{ audio.original_emotion|default:"Unknown" }} → {{ audio.get_target_emotion_display }}</strong>
+                <br />
+                <small class="text-muted">Uploaded: {{ audio.created_at|date:"M d, Y H:i" }}</small>
+                {% if audio.is_processed %}
+                <br /><span class="text-success">Processed</span>
+                {% else %}
+                <br /><span class="text-warning">Processing...</span>
+                {% endif %}
+            </div>
+            <div class="d-flex flex-column flex-md-row gap-2 mt-2 mt-md-0">
+                {% if audio.is_processed and audio.converted_file %}
+                <a href="{% url 'download_audio' audio.id %}" class="btn btn-outline-primary">Download</a>
+                {% endif %}
+                <a href="{% url 'audio_details' audio.id %}" class="btn btn-secondary">Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No audio files uploaded yet. Upload your first audio file above!</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h4>How it works:</h4>
+    <ol>
+        <li><strong>Upload</strong> your audio file (WAV, MP3, or M4A)</li>
+        <li><strong>Select</strong> the target emotion you want</li>
+        <li><strong>AI processes</strong> your audio and converts the emotional tone</li>
+        <li><strong>Download</strong> your converted audio file</li>
+    </ol>
+    
+    <h4>Supported Emotions:</h4>
+    <ul>
+        <li><strong>SAD</strong> - Sad (melancholy, slower tone) <span class="badge bg-success">Available</span></li>
+        <li><strong>ANG</strong> - Anger (intense, aggressive tone) <span class="badge bg-secondary">Coming soon</span></li>
+        <li><strong>HAP</strong> - Happy (upbeat, cheerful tone) <span class="badge bg-secondary">Coming soon</span></li>
+        <li><strong>NEU</strong> - Neutral (balanced, natural tone) <span class="badge bg-secondary">Coming soon</span></li>
+        <li><strong>FEA</strong> - Fear (tense, uncertain tone) <span class="badge bg-secondary">Coming soon</span></li>
+        <li><strong>DIS</strong> - Disgust (negative, dismissive tone) <span class="badge bg-secondary">Coming soon</span></li>
+    </ul>
+</div>
+{% endblock %}
